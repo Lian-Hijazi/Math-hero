@@ -4,24 +4,24 @@ public class User {
         private String name;
         private String userName;
         private String phone;
-        private String email;
         private String age;
         private int hint,level,score;
 
-        public User(String name, String userName, String phone, String email, String age){
-            name=name;
-            userName=userName;
-            phone=phone;
-            email=email;
-            age=age;
-            hint=0;
-            level=1;
-            score=5;
+        public User(){}
 
-        }
+    public User(String name, String userName, String phone, String age){
+        this.name = name;
+        this.userName = userName;
+        this.phone = phone;
+        this.age = age;
+        this.hint = 0;
+        this.level = 1;
+        this.score = 5;
+    }
 
 
-        public void setHint(int hint) {
+
+    public void setHint(int hint) {
             this.hint = hint;
         }
 
@@ -49,9 +49,6 @@ public class User {
             return name;
         }
 
-        public String getEmail() {
-            return email;
-        }
 
         public String getAge() {
             return age;

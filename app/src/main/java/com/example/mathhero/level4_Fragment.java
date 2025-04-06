@@ -115,21 +115,21 @@ public class level4_Fragment extends Fragment {
         int a=1,b=2;
 
         if (stage == 1) {
-            while(a%b!=0){
+            while(a%b!=0||b==0){
                 a = (int) (Math.random() * 10);
                 b = (int) (Math.random() * 10);
             }
         }
 
         if (stage == 2) {
-            while(a%b!=0){
+            while(a%b!=0||b==0){
                 a = (int) (Math.random() * 90)+10;
                 b = (int) (Math.random() * 10);
             }
         }
 
         if (stage == 3) {
-            while (a%b!=0) {
+            while (a%b!=0||b==0) {
                 a = (int) (Math.random() * 900) + 100;
                 b = (int) (Math.random() * 10) ;
             }

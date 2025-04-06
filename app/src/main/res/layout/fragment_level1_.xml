@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/score"
-            android:layout_width="100dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:text="score:0"
             android:textSize="27dp"
@@ -82,11 +82,11 @@
 
             <TextView
                 android:id="@+id/number1"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:text="0 ️"
                 android:gravity="center"
-                android:textSize="50dp"
+                android:textSize="40dp"
                 android:background="#FF9C8B "
                 android:layout_marginLeft="15dp"
                 />
@@ -102,11 +102,11 @@
 
             <TextView
                 android:id="@+id/number2"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:text="0 ️"
                 android:gravity="center"
-                android:textSize="50dp"
+                android:textSize="40dp"
                 android:background="#FF9C8B "
                 android:layout_marginLeft="15dp"
                 />
@@ -122,11 +122,11 @@
 
             <EditText
                 android:id="@+id/answer"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:hint="?"
                 android:gravity="center"
-                android:textSize="50dp"
+                android:textSize="40dp"
                 android:background="#FF9C8B "/>
 
         </LinearLayout>

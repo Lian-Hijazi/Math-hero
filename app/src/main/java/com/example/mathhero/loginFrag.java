@@ -87,15 +87,20 @@ public class loginFrag extends Fragment {
                         MainActivity.isLog=true;
                         currentUser= mAuth.getCurrentUser();
                         MainActivity.gitUserid(currentUser.getUid());
-                        MainActivity.startData();
-                        et_email.setText("");
-                        et_password.setText("");
-                        }
 
+                        MainActivity.startData(() -> {
+                            // ✅ لما تجهز البيانات من Firebase
+                            MainActivity.Home_frame.setVisibility(View.VISIBLE);
+                            MainActivity.Login_frame.setVisibility(View.INVISIBLE);
+                            MainActivity.sign_frame.setVisibility(View.INVISIBLE);
+                            MainActivity.isLog = true;
+
+                            et_email.setText("");
+                            et_password.setText("");
+                        });
+                    }
                     else
                         Toast.makeText(getActivity(), "login failed", Toast.LENGTH_SHORT).show();
-
-
 
                 }
             });
@@ -103,15 +108,27 @@ public class loginFrag extends Fragment {
         else {
             Toast.makeText(getActivity(), "pleas fill fields", Toast.LENGTH_SHORT).show();
         }
-
-        }
+    }
 
     @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser=mAuth.getCurrentUser();
-        if(currentUser!=null)
+        if(currentUser!=null) {
             updateUI();
+            MainActivity.gitUserid(currentUser.getUid());
+
+            MainActivity.gitUserid(currentUser.getUid());
+            MainActivity.startData(() -> {
+                // ✅ لما تجهز البيانات من Firebase
+                MainActivity.Home_frame.setVisibility(View.VISIBLE);
+                MainActivity.Login_frame.setVisibility(View.INVISIBLE);
+                MainActivity.sign_frame.setVisibility(View.INVISIBLE);
+                MainActivity.isLog = true;
+
+            });
+        }
+
     }
 
     public void updateUI(){

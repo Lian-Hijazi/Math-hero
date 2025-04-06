@@ -92,9 +92,11 @@ public class home_Fragment extends Fragment {
     }
 
     public void filldata(){
-        level.setText("Level: "+MainActivity.player_level);
-        score.setText("Score: "+MainActivity.player_score);
-        startIn.setText("Let's start in level "+(MainActivity.player_level));
+        MainActivity.startData(() -> {
+            score.setText(String.valueOf(MainActivity.player_score));
+            level.setText(String.valueOf(MainActivity.player_level));
+            startIn.setText("Let's start in level " + MainActivity.player_level);
+        });
 
     }
 

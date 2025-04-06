@@ -14,7 +14,7 @@
 
         <LinearLayout
             android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -84,11 +84,11 @@
 
             <TextView
                 android:id="@+id/number1"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:text="0 ️"
                 android:gravity="center"
-                android:textSize="50dp"
+                android:textSize="40dp"
                 android:background="#A1C5FC "
                 android:layout_marginLeft="15dp"
                 />
@@ -104,11 +104,11 @@
 
             <TextView
                 android:id="@+id/number2"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:text="0 ️"
                 android:gravity="center"
-                android:textSize="50dp"
+                android:textSize="40dp"
                 android:background="#A1C5FC "
                 android:layout_marginLeft="15dp"
                 />
@@ -124,11 +124,11 @@
 
             <EditText
                 android:id="@+id/answer"
-                android:layout_width="80dp"
+                android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:hint="?"
                 android:gravity="center"
-                android:textSize="50dp"
+                android:textSize="40dp"
                 android:background="#A1C5FC "/>
 
         </LinearLayout>

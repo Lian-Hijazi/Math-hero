@@ -80,7 +80,7 @@ public class level1_Fragment extends Fragment {
                     if (n == 3) score += 6;
                     scoreT.setText("score: " + score);
                     n++;
-                    if (n == 3 && stage == 4)
+                    if (n == 3 && stage == 3)
                         finish();
                     if (n == 3) {
                         stage++;
@@ -125,13 +125,15 @@ public class level1_Fragment extends Fragment {
 
         if (stage == 3) {
             a = (int) (Math.random() * 900) + 100;
-            b = (int) (Math.random() * 900) + 100;
+            b = (int) (Math.random() * 90) + 10;
         }
 
         number1.setText(Integer.toString(a));
         number2.setText(Integer.toString(b));
 
     }
+
+
 
     public void finish() {
         MainActivity.is_playing = false;

@@ -1,6 +1,7 @@
 package com.example.mathhero;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,18 +114,24 @@ public class signUpFrag extends Fragment {
                             currentUser= mAuth.getCurrentUser();
                             addUserToFireStore(currentUser.getUid());
                             startlogin();
-                            user.setText("");
-                            name.setText("");
-                            phone.setText("");
-                            email.setText("");
-                            password.setText("");
-                            confirmPassword.setText("");
+                            clearFields();
+
                         }
                         else {
                             Toast.makeText(getActivity(), "Failed", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+    public void clearFields(){
+        user.setText("");
+        name.setText("");
+        phone.setText("");
+        email.setText("");
+        password.setText("");
+        confirmPassword.setText("");
+        age.setText("");
     }
 
    public void startlogin(){
@@ -134,7 +141,7 @@ public class signUpFrag extends Fragment {
    }
 
     public void addUserToFireStore( String userId){
-        User user1=new User(name.getText().toString(),user.getText().toString(),phone.getText().toString(),email.getText().toString(),age.getText().toString());
+        User user1=new User(name.getText().toString(),user.getText().toString(),phone.getText().toString(),age.getText().toString());
         db.collection("users").document(userId).set(user1) ;
     }
 
