@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.mathhero.MainActivity"
+    android:background="#FEFF9F">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/logo"
+        android:layout_marginEnd="15dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Math Hero  ️"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:layout_marginTop="5dp"
+        android:layout_marginVertical="10sp"
+        />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="game rules:  ️"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="*click to get more information ️"
+        android:textSize="20dp"
+        android:layout_marginTop="5dp" />
+
+    <TextView
+        android:id="@+id/stages"
+        android:background="#FA4032"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Stages and Levels"
+        android:textSize="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp" />
+
+    <TextView
+        android:id="@+id/conditions"
+        android:background="#5CB338"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Game Conditions️"
+        android:textSize="30dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp" />
+
+    <TextView
+        android:id="@+id/points"
+        android:background="#4379F2"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Points"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginTop="25dp" />
+
+    <TextView
+        android:id="@+id/help"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="Help"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:textSize="30dp"
+        android:background="#FFEB00"
+        android:layout_marginTop="25dp"/>
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:id="@+id/imageView"
+        />
+
+
+</LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/rules"
+        android:layout_width="match_parent"
+        android:layout_height="600dp"
+        android:text=""
+        android:layout_marginTop="105dp"
+        android:textSize="25dp"
+        android:layout_marginLeft="1.7dp"
+        android:layout_marginRight="5dp"
+        android:background="#F7CFD8"/>
+
+    <Button
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="back"
+        android:textSize="20dp"
+        android:layout_marginTop="10sp"
+        android:layout_gravity="center"
+        />
+    </LinearLayout>
+
+
+</FrameLayout>
