@@ -126,6 +126,7 @@
                 android:background="#FFF574  "
                 android:gravity="center"
                 android:hint="?"
+                android:inputType="number"
                 android:textSize="40dp" />
 
         </LinearLayout>

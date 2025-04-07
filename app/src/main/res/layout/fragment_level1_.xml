@@ -72,6 +72,7 @@
             android:layout_marginStart="100dp"
             />
 
+
         </LinearLayout>
 
         <LinearLayout
@@ -125,6 +126,7 @@
                 android:layout_width="85dp"
                 android:layout_height="80dp"
                 android:hint="?"
+                android:inputType="number"
                 android:gravity="center"
                 android:textSize="40dp"
                 android:background="#FF9C8B "/>

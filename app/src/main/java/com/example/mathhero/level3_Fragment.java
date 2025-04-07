@@ -18,7 +18,8 @@ public class level3_Fragment extends Fragment {
     private ImageView think_img,hint;
     private Button check,leave;
     private int score,Nhint;
-    private TextView scoreT,number1,number2,answer;
+    private TextView  number1, number2, answer;
+    public static TextView scoreT;
     private int stage, n;
 
 
@@ -53,6 +54,8 @@ public class level3_Fragment extends Fragment {
         hint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MainActivity.updateHint();
+                score=Integer.parseInt(scoreT.getText().toString().substring(7));
                 if(score>4){
                     score-=5;
                     scoreT.setText("score: "+score);
@@ -72,10 +75,13 @@ public class level3_Fragment extends Fragment {
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (answer.getText().toString().equals(Integer.toString(Integer.parseInt(number1.getText().toString()) * Integer.parseInt(number2.getText().toString())))) {
-                    if(n==1) score+=2;
-                    if(n==2) score+=4;
-                    if(n==3) score+=6;
+                score=Integer.parseInt(scoreT.getText().toString().substring(7));
+                if(answer.getText().toString().trim().isEmpty())
+                    Toast.makeText(getActivity(),"input your answer",Toast.LENGTH_SHORT).show();
+                else {if(answer.getText().toString().equals(Integer.toString(Integer.parseInt(number1.getText().toString()) * Integer.parseInt(number2.getText().toString())))) {
+                    if (n == 1) score += 2;
+                    if (n == 2) score += 4;
+                    if (n == 3) score += 6;
                     scoreT.setText("score: " + score);
                     n++;
                     if (n == 3 && stage == 4)
@@ -84,12 +90,8 @@ public class level3_Fragment extends Fragment {
                         stage++;
                         n = 1;
                     }
-
-                    newEexercise();
-                    answer.setText("");
                 }
-
-                else {
+                    MainActivity.updateScore(score);
                     newEexercise();
                 }
             }
@@ -100,8 +102,7 @@ public class level3_Fragment extends Fragment {
             public void onClick(View v) {
                 MainActivity.is_playing = false;
                 MainActivity.Home_frame.setVisibility(View.VISIBLE);
-                MainActivity.level1_frame.setVisibility(View.INVISIBLE);
-                MainActivity.setDataLeave(score, Nhint);
+                MainActivity.level3_frame.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -124,9 +125,9 @@ public class level3_Fragment extends Fragment {
     }
 
     public void finish() {
+        MainActivity.updateLevel();
         MainActivity.is_playing = false;
         MainActivity.Home_frame.setVisibility(View.VISIBLE);
         MainActivity.level1_frame.setVisibility(View.INVISIBLE);
-        MainActivity.setData(score);
     }
 }

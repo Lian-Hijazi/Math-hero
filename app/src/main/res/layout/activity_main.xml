@@ -7,11 +7,14 @@
     android:layout_height="match_parent"
     tools:context="com.example.mathhero.MainActivity">
 
+
     <FrameLayout
         android:id="@+id/home_Frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottom_navigation"/>
+        android:layout_above="@+id/bottom_navigation">
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/rules_Frame"
@@ -74,5 +77,17 @@
         app:menu="@menu/menu"
         android:id="@+id/bottom_navigation"
         android:layout_alignParentBottom="true"/>
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="270dp"
+        android:layout_height="85dp"
+        android:gravity="center"
+        android:text="let's start"
+        android:textSize="50dp"
+        android:layout_centerInParent="true" />
+
+
+
 
 </RelativeLayout>

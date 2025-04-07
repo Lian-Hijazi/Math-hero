@@ -1,5 +1,8 @@
 package com.example.mathhero;
 
+import static com.example.mathhero.MainActivity.gitUserid;
+import static com.example.mathhero.MainActivity.startData;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,7 +29,6 @@ public class loginFrag extends Fragment {
     private FirebaseAuth mAuth;
     private ImageView logo,imageView;
     private FirebaseUser currentUser;
-
 
 
     public loginFrag() {
@@ -81,16 +83,14 @@ public class loginFrag extends Fragment {
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
                         Toast.makeText(getActivity(), "login seccessful", Toast.LENGTH_SHORT).show();
-                        MainActivity.Home_frame.setVisibility(View.VISIBLE);
                         MainActivity.Login_frame.setVisibility(View.INVISIBLE);
                         MainActivity.sign_frame.setVisibility(View.INVISIBLE);
                         MainActivity.isLog=true;
                         currentUser= mAuth.getCurrentUser();
-                        MainActivity.gitUserid(currentUser.getUid());
+                        gitUserid(currentUser.getUid(),null);
 
-                        MainActivity.startData(() -> {
+                        startData(() -> {
                             // ✅ لما تجهز البيانات من Firebase
-                            MainActivity.Home_frame.setVisibility(View.VISIBLE);
                             MainActivity.Login_frame.setVisibility(View.INVISIBLE);
                             MainActivity.sign_frame.setVisibility(View.INVISIBLE);
                             MainActivity.isLog = true;
@@ -113,27 +113,27 @@ public class loginFrag extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser=mAuth.getCurrentUser();
-        if(currentUser!=null) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        if (currentUser != null) {
             updateUI();
-            MainActivity.gitUserid(currentUser.getUid());
-
-            MainActivity.gitUserid(currentUser.getUid());
-            MainActivity.startData(() -> {
-                // ✅ لما تجهز البيانات من Firebase
-                MainActivity.Home_frame.setVisibility(View.VISIBLE);
-                MainActivity.Login_frame.setVisibility(View.INVISIBLE);
-                MainActivity.sign_frame.setVisibility(View.INVISIBLE);
-                MainActivity.isLog = true;
-
+            gitUserid(currentUser.getUid(), new MainActivity.OnUserDataLoaded() {
+                @Override
+                public void onLoaded() {
+                    // الآن بعد التأكد من أن currentUserId تم تعيينه، يمكن استدعاء startData()
+                    startData(() -> {
+                        MainActivity.Login_frame.setVisibility(View.INVISIBLE);
+                        MainActivity.sign_frame.setVisibility(View.INVISIBLE);
+                        MainActivity.isLog = true;
+                    });
+                }
             });
         }
-
     }
+
 
     public void updateUI(){
         MainActivity.isLog=true;
-        MainActivity.Home_frame.setVisibility(View.VISIBLE);
         MainActivity.Login_frame.setVisibility(View.INVISIBLE);
     }
 }

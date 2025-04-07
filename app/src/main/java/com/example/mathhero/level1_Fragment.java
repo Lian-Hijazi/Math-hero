@@ -1,6 +1,7 @@
 package com.example.mathhero;
 
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
@@ -17,11 +18,11 @@ import androidx.fragment.app.Fragment;
 public class level1_Fragment extends Fragment {
     private ImageView think_img, hint;
     private Button check, leave;
-    private int score, Nhint;
-    private TextView scoreT, number1, number2, answer;
+    private int score;
+    private TextView number1, number2, answer;
+    public static TextView scoreT;
     private int stage, n;
-    TextView timerText;
-    int time, t;
+    public static TextView timerText;
     boolean answered = false;
 
 
@@ -37,24 +38,23 @@ public class level1_Fragment extends Fragment {
 
         stage = 1;
         n = 1;
-        Nhint = 0;
         think_img = view.findViewById(R.id.think_img);
         think_img.setImageResource(R.drawable.help);
         leave = view.findViewById(R.id.leave);
         check = view.findViewById(R.id.check);
         hint = view.findViewById(R.id.hint);
         hint.setImageResource(R.drawable.hint);
-        score = MainActivity.player_score;
         scoreT = view.findViewById(R.id.score);
         number1 = view.findViewById(R.id.number1);
         number2 = view.findViewById(R.id.number2);
         answer = view.findViewById(R.id.answer);
-        scoreT.setText("score: " + score);
         timerText = view.findViewById(R.id.timerText);
         newEexercise();
         hint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                MainActivity.updateHint();
+                score = Integer.parseInt(scoreT.getText().toString().substring(7));
                 if (score > 4) {
                     score -= 5;
                     scoreT.setText("score: " + score);
@@ -64,7 +64,7 @@ public class level1_Fragment extends Fragment {
                         public void run() {
                             answer.setText("");
                         }
-                    }, 3000);
+                    }, 2000);
                 } else {
                     Toast.makeText(getActivity(), "you don't have enough score", Toast.LENGTH_SHORT).show();
                 }
@@ -73,23 +73,23 @@ public class level1_Fragment extends Fragment {
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                answered = true;
-                if (answer.getText().toString().equals(Integer.toString(Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())))) {
-                    if (n == 1) score += 2;
-                    if (n == 2) score += 4;
-                    if (n == 3) score += 6;
-                    scoreT.setText("score: " + score);
-                    n++;
-                    if (n == 3 && stage == 3)
-                        finish();
-                    if (n == 3) {
-                        stage++;
-                        n = 1;
+                if (answer.getText().toString().trim().isEmpty())
+                    Toast.makeText(getActivity(), "input your answer", Toast.LENGTH_SHORT).show();
+                else {
+                    score = Integer.parseInt(scoreT.getText().toString().substring(7));
+                    if (answer.getText().toString().equals(Integer.toString(Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())))) {
+                        if (n == 1) score += 2;
+                        if (n == 2) score += 4;
+                        if (n == 3) score += 6;
+                        n++;
+                        if (n == 3 && stage == 3)
+                            finish();
+                        if (n == 3) {
+                            stage++;
+                            n = 1;
+                        }
                     }
-
-                    newEexercise();
-                    answer.setText("");
-                } else {
+                    MainActivity.updateScore(score);
                     newEexercise();
                 }
             }
@@ -101,7 +101,6 @@ public class level1_Fragment extends Fragment {
                 MainActivity.is_playing = false;
                 MainActivity.Home_frame.setVisibility(View.VISIBLE);
                 MainActivity.level1_frame.setVisibility(View.INVISIBLE);
-                MainActivity.setDataLeave(score, Nhint);
             }
         });
 
@@ -109,6 +108,7 @@ public class level1_Fragment extends Fragment {
     }
 
     public void newEexercise() {
+        newTimer(stage);
         answered = false;
         answer.setText("");
 
@@ -134,11 +134,50 @@ public class level1_Fragment extends Fragment {
     }
 
 
-
     public void finish() {
+        MainActivity.updateLevel();
         MainActivity.is_playing = false;
         MainActivity.Home_frame.setVisibility(View.VISIBLE);
         MainActivity.level1_frame.setVisibility(View.INVISIBLE);
-        MainActivity.setData(score);
+    }
+
+    private static CountDownTimer countDownTimer; // عشان نقدر نوقف المؤقت القديم إذا احتجنا
+
+    public static void newTimer(int stage) {
+
+        // نحدد الوقت حسب قيمة المرحلة
+        int timeInSeconds;
+        switch (stage) {
+            case 1:
+                timeInSeconds = 5;
+                break;
+            case 2:
+                timeInSeconds = 10;
+                break;
+            case 3:
+                timeInSeconds = 15;
+                break;
+            default:
+                timeInSeconds = 0;
+                break;
+        }
+
+        // نلغي المؤقت القديم إذا كان شغال
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        // نبدأ مؤقت جديد
+        countDownTimer = new CountDownTimer(timeInSeconds * 1000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                int secondsLeft = (int) (millisUntilFinished / 1000);
+                timerText.setText(String.valueOf(secondsLeft));
+            }
+
+            public void onFinish() {
+                timerText.setText("0");
+            }
+        }.start();
     }
 }
+

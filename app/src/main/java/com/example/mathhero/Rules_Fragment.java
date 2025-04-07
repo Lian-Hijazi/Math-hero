@@ -73,7 +73,7 @@ public class Rules_Fragment extends Fragment {
         conditions.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                rules.setText("you must be over 10 years old.\n\n" +
+                rules.setText("you must be at least 10 years old.\n\n" +
                         "The game starts at Stage 1 and ends at Stage 4.\n\n" +
                         "To win the game, you have to complete all four stages.\n\n" +
                         "To move to the next level, you have to answer 5 exercises correctly in the current level.");
