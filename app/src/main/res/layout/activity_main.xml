@@ -5,7 +5,9 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.mathhero.MainActivity">
+    tools:context="com.example.mathhero.MainActivity"
+    android:background="@drawable/starting"
+    >
 
 
     <FrameLayout
@@ -87,6 +89,17 @@
         android:textSize="50dp"
         android:layout_centerInParent="true" />
 
+
+    <!-- الطبقة الخاصة بالبالونات -->
+    <FrameLayout
+        android:id="@+id/partyLayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:background="@android:color/transparent"
+        android:elevation="10dp"/>
 
 
 

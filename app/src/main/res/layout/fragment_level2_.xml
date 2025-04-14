@@ -6,6 +6,16 @@
     tools:context="com.example.mathhero.MainActivity"
     android:background="#5CB338">
 
+    <ImageView
+        android:id="@+id/emojiImage"
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:src="@drawable/good"
+        android:elevation="5dp" /> <!-- هذا يخلي الإيموجي فوق كل العناصر -->
+
+
     <LinearLayout
         android:layout_marginTop="20dp"
         android:layout_width="match_parent"
@@ -58,7 +68,7 @@
                 android:id="@+id/level"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:text="Level 1:Subtraction"
+                android:text="Level 2:Subtraction"
                 android:textSize="30dp"
                 android:background="#7FDB68 "
                 />

@@ -1,30 +1,46 @@
 package com.example.mathhero;
+import android.Manifest;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import android.view.animation.LinearInterpolator;
+
+import java.util.Random;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,11 +69,13 @@ public class MainActivity extends AppCompatActivity {
     public static boolean isLog;
     private Button start;
 
+    public static FrameLayout partyLayer;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         FirebaseApp.initializeApp(this);
         isStart = false;
         is_playing = false;
@@ -74,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
         level3_frame = findViewById(R.id.level3_Frame);
         level4_frame = findViewById(R.id.level4_Frame);
 
+        partyLayer = findViewById(R.id.partyLayer);
+
         bottom_navigation = findViewById(R.id.bottom_navigation);
         startFragment();
 
@@ -85,6 +105,20 @@ public class MainActivity extends AppCompatActivity {
                 isStart = true;
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("game_channel", "Game Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
+            }
+        }
+
     }
 
     public void startFragment() {
@@ -236,13 +270,28 @@ public class MainActivity extends AppCompatActivity {
         db.collection("users").document(currentUserId).update("score", player_score);
     }
 
-    public static void updateLevel() {
-        if (player_level != 3) {
-            player_level++;
-            details_Fragment.level.setText("Level:    " + player_level);
-            home_Fragment.leveltv.setText("level:" + player_level);
-            home_Fragment.startIn.setText("Let's start in level " + player_level);
-            db.collection("users").document(currentUserId).update("level", player_level);
+    public static void updateLevel(int level, Context context) {
+        if (player_level != 4) {
+            if (player_level == level) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("🎉 Well Done!");
+                builder.setMessage("You completed the level successfully! Keep going!");
+
+                builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        player_level++;
+                        details_Fragment.level.setText("Level:    " + player_level);
+                        home_Fragment.leveltv.setText("level:" + player_level);
+                        home_Fragment.startIn.setText("Let's start in level " + player_level);
+                        db.collection("users").document(currentUserId).update("level", player_level);
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
         } else {
             player_level = 1;
             player_score = 5;
@@ -260,7 +309,133 @@ public class MainActivity extends AppCompatActivity {
             db.collection("users").document(currentUserId).update("level", player_level);
             db.collection("users").document(currentUserId).update("score", player_score);
             db.collection("users").document(currentUserId).update("hint", player_hint);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Well done!");
+            builder.setMessage("All respect! You have completed the game and were a math hero. Now, let's start from the beginning to become even stronger!");
+            builder.setPositiveButton("Start Again", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
+                }
+            });
+            builder.setCancelable(false); // لمنع إغلاق الـ Dialog من الخارج
+            builder.show();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // تحقق إذا كان يمكن جدولة المنبهات الدقيقة (من خلال AlarmManager غير ثابت)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (getSystemService(AlarmManager.class).canScheduleExactAlarms()) {
+                // ضبط الوقت الذي يجب أن يمر قبل أن يُرسل الإشعار (دقيقة)
+                long triggerAtMillis = System.currentTimeMillis() + 60000; // 60,000 ميلي ثانية = دقيقة
+                scheduleAlarm(triggerAtMillis);
+            }
+        } else {
+            // في الإصدارات القديمة، مباشرة قم بجدولة المنبهات
+            long triggerAtMillis = System.currentTimeMillis() + 60000;
+            scheduleAlarm(triggerAtMillis);
+        }
+    }
+
+    private void scheduleAlarm(long triggerAtMillis) {
+        // إنشاء الـ Intent و PendingIntent
+        Intent intent = new Intent(this, NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        // الحصول على الـ AlarmManager
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        // تعيين المنبه ليُرسل الإشعار بعد دقيقة
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent);
+
+        Log.d("MainActivity", "Alarm set for 1 minute from now: " + triggerAtMillis);
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // إلغاء المنبه عند العودة للنشاط
+        Intent intent = new Intent(this, NotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.cancel(pendingIntent); // إلغاء المنبه عند العودة للنشاط
+    }
+
+    public static void party(Context context) {
+            // عدد البالونات بناءً على العرض
+            int balloonWidth = 200; // عرض البالونة
+            int balloonSpacing = 50; // المسافة بين البالونات
+            int screenWidth = partyLayer.getWidth(); // عرض الشاشة
+
+            // حساب عدد البالونات الممكنة بالعرض
+            int numBalloons = (screenWidth - balloonSpacing) / (balloonWidth + balloonSpacing);
+
+            // التأكد من قياسات الشاشة داخل partyLayer
+            if (partyLayer == null) {
+                Toast.makeText(context, "Party layer not found!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // التأكد من قياسات الشاشة بعد التحقق من الـ Layout
+            partyLayer.post(() -> {
+                int screenHeight = partyLayer.getHeight();
+
+                // الحصول على الارتفاع المخصص للـ BottomNavigation
+                int bottomNavHeight = context.getResources().getDimensionPixelSize(R.dimen.design_bottom_navigation_height);
+
+                // المساحة المتاحة في الشاشة بدون الـ BottomNavigation
+                int availableHeight = screenHeight - bottomNavHeight;
+
+                // إضافة البالونات
+                for (int i = 0; i < numBalloons; i++) {
+                    ImageView balloon = new ImageView(context);
+                    balloon.setImageResource(R.drawable.balloon); // تأكد من وجود صورة بالونة في drawable
+
+                    // تكبير حجم البالونات
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(balloonWidth + 200, 500); // حجم أكبر للبالونات
+
+                    // تحديد موقع البالونة داخل النطاق المحدد (توزيع البالونات بشكل مرتب)
+                    int xPosition = i * (balloonWidth + balloonSpacing); // حساب المسافة بين البالونات
+                    int yPosition = availableHeight; // البداية من أسفل الشاشة بدون الـ BottomNavigation
+
+                    params.leftMargin = xPosition;
+                    params.topMargin = yPosition;
+
+                    balloon.setLayoutParams(params);
+
+                    // إضافة البالونة فورًا بعد تحديث الـ Layout
+                    partyLayer.addView(balloon);
+                    partyLayer.invalidate();
+
+                    // تحريك البالونة للأعلى مع تسريع الحركة لتكون أكثر سلاسة
+                    ObjectAnimator animator = ObjectAnimator.ofFloat(balloon, "translationY", yPosition, -screenHeight); // تحريك إلى أعلى الشاشة
+                    animator.setDuration(5000); // مدة التحريك (5 ثواني)
+                    animator.setInterpolator(new LinearInterpolator()); // جعل الحركة أكثر سلاسة
+                    animator.start();
+                    // لما تخلص الأنيميشن، امسح البالون
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            partyLayer.removeView(balloon);
+                        }
+                    });
+                    animator.start();
+                }
+            });
+    }
+
+    public static void startPartyTimes(Context context) {
+        Handler handler = new Handler();
+        for (int i = 0; i < 5; i++) {
+            int delay = i * 1000; // كل 6 ثواني
+            handler.postDelayed(() -> party(context), delay);
         }
     }
 

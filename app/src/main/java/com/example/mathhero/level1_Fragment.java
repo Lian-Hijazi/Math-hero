@@ -1,5 +1,8 @@
 package com.example.mathhero;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -18,12 +21,14 @@ import androidx.fragment.app.Fragment;
 public class level1_Fragment extends Fragment {
     private ImageView think_img, hint;
     private Button check, leave;
-    private int score;
-    private TextView number1, number2, answer;
+    private static TextView number1;
+    private static TextView number2;
+    public static TextView answer;
     public static TextView scoreT;
-    private int stage, n;
+    public static int stage, n;
     public static TextView timerText;
-    boolean answered = false;
+    private ImageView emojiImage;
+
 
 
     public level1_Fragment() {
@@ -35,9 +40,6 @@ public class level1_Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_level1_, container, false);
-
-        stage = 1;
-        n = 1;
         think_img = view.findViewById(R.id.think_img);
         think_img.setImageResource(R.drawable.help);
         leave = view.findViewById(R.id.leave);
@@ -45,19 +47,19 @@ public class level1_Fragment extends Fragment {
         hint = view.findViewById(R.id.hint);
         hint.setImageResource(R.drawable.hint);
         scoreT = view.findViewById(R.id.score);
+        scoreT.setText("score: " + MainActivity.player_score);
         number1 = view.findViewById(R.id.number1);
         number2 = view.findViewById(R.id.number2);
         answer = view.findViewById(R.id.answer);
         timerText = view.findViewById(R.id.timerText);
-        newEexercise();
+        newExercise();
         hint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MainActivity.updateHint();
-                score = Integer.parseInt(scoreT.getText().toString().substring(7));
-                if (score > 4) {
-                    score -= 5;
-                    scoreT.setText("score: " + score);
+                if (MainActivity.player_score > 4) {
+                    MainActivity.updateScore(-5);
+                    scoreT.setText("score: " + MainActivity.player_score);
                     answer.setText(Integer.toString(Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())));
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
@@ -70,17 +72,24 @@ public class level1_Fragment extends Fragment {
                 }
             }
         });
+
+        emojiImage = view.findViewById(R.id.emojiImage);
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (answer.getText().toString().trim().isEmpty())
                     Toast.makeText(getActivity(), "input your answer", Toast.LENGTH_SHORT).show();
                 else {
-                    score = Integer.parseInt(scoreT.getText().toString().substring(7));
+                    // إيقاف المؤقت
+                    if (countDownTimer != null) {
+                        countDownTimer.cancel();
+                    }
+
                     if (answer.getText().toString().equals(Integer.toString(Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())))) {
-                        if (n == 1) score += 2;
-                        if (n == 2) score += 4;
-                        if (n == 3) score += 6;
+                        emojiImage.setVisibility(View.VISIBLE);
+                        if (n == 1) MainActivity.updateScore(2);
+                        if (n == 2) MainActivity.updateScore(4);
+                        if (n == 3) MainActivity.updateScore(6);
                         n++;
                         if (n == 3 && stage == 3)
                             finish();
@@ -88,30 +97,56 @@ public class level1_Fragment extends Fragment {
                             stage++;
                             n = 1;
                         }
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                emojiImage.setVisibility(View.GONE);
+                                newExercise();
+                            }
+                        }, 2000);
                     }
-                    MainActivity.updateScore(score);
-                    newEexercise();
+                    else {
+                        n=1;
+                        showCorrectAnswer();
+                    }
                 }
+
             }
         });
 
         leave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.is_playing = false;
-                MainActivity.Home_frame.setVisibility(View.VISIBLE);
-                MainActivity.level1_frame.setVisibility(View.INVISIBLE);
+                // Stop the timer
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                }
+
+                // Show confirmation dialog
+                new android.app.AlertDialog.Builder(getActivity())
+                        .setTitle("Exit Game")
+                        .setMessage("Are you sure you want to leave?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            // User confirmed exit
+                            MainActivity.is_playing = false;
+                            MainActivity.Home_frame.setVisibility(View.VISIBLE);
+                            MainActivity.level1_frame.setVisibility(View.INVISIBLE);
+                        })
+                        .setNegativeButton("No", (dialog, which) -> {
+                            // User canceled exit - resume timer
+                            newTimer(stage);
+                            dialog.dismiss();
+                        })
+                        .setCancelable(false)
+                        .show();
             }
         });
-
         return view;
     }
 
-    public void newEexercise() {
+    public static void newExercise() {
         newTimer(stage);
-        answered = false;
         answer.setText("");
-
         int a = 0, b = 0;
         if (stage == 1) {
             a = (int) (Math.random() * 10);
@@ -135,27 +170,27 @@ public class level1_Fragment extends Fragment {
 
 
     public void finish() {
-        MainActivity.updateLevel();
+        MainActivity.updateLevel(1, getContext());
         MainActivity.is_playing = false;
         MainActivity.Home_frame.setVisibility(View.VISIBLE);
         MainActivity.level1_frame.setVisibility(View.INVISIBLE);
+        MainActivity.startPartyTimes(getContext());
     }
 
-    private static CountDownTimer countDownTimer; // عشان نقدر نوقف المؤقت القديم إذا احتجنا
+    static CountDownTimer countDownTimer; // عشان نقدر نوقف المؤقت القديم إذا احتجنا
 
     public static void newTimer(int stage) {
-
         // نحدد الوقت حسب قيمة المرحلة
         int timeInSeconds;
         switch (stage) {
             case 1:
-                timeInSeconds = 5;
-                break;
-            case 2:
                 timeInSeconds = 10;
                 break;
-            case 3:
+            case 2:
                 timeInSeconds = 15;
+                break;
+            case 3:
+                timeInSeconds = 20;
                 break;
             default:
                 timeInSeconds = 0;
@@ -175,9 +210,40 @@ public class level1_Fragment extends Fragment {
             }
 
             public void onFinish() {
-                timerText.setText("0");
+                    // المستخدم ما جاوب => تمرين جديد
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            newExercise();
+                        }
+                        }, 500); // تأخير صغير لتجنب مشاكل التداخل
             }
         }.start();
     }
+
+    public void showCorrectAnswer() {
+        // إيقاف المؤقت
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Correct Answer")
+                .setMessage(number1.getText().toString() + " + " + number2.getText().toString() + " = "
+                        + (Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())))
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        // ✅ بعد الضغط OK فقط:
+                        newExercise();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+    }
+
+
 }
 

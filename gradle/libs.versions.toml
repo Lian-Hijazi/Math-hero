@@ -11,6 +11,8 @@ firebaseAuth = "23.2.0"
 playServicesTasks = "18.2.0"
 firebaseFirestore = "25.1.2"
 firebaseDatabase = "21.0.0"
+kotlin = "1.9.24"
+coreKtx = "+"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -24,7 +26,9 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version
 play-services-tasks = { group = "com.google.android.gms", name = "play-services-tasks", version.ref = "playServicesTasks" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
