@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     public static signUpFrag signUpFrag;
     private BottomNavigationView bottom_navigation;
     public static boolean isLog;
-    private Button start;
+    public static Button start;
 
     public static FrameLayout partyLayer;
 
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         isStart = false;
         is_playing = false;
         start = findViewById(R.id.start);
+        start.setVisibility(View.INVISIBLE);
         Home_frame = findViewById(R.id.home_Frame);
         Login_frame = findViewById(R.id.login_Frame);
         details_frame = findViewById(R.id.details_Frame);
@@ -168,13 +169,12 @@ public class MainActivity extends AppCompatActivity {
                     rules_frame.setVisibility(View.INVISIBLE);
                 }
 
-                if (item.getItemId() == R.id.menu_login && is_playing != true && !isLog && isStart) {
+                if (item.getItemId() == R.id.menu_login && is_playing != true && !isLog) {
                     Home_frame.setVisibility(View.INVISIBLE);
                     Login_frame.setVisibility(View.VISIBLE);
                     sign_frame.setVisibility(View.INVISIBLE);
                     details_frame.setVisibility(View.INVISIBLE);
                     rules_frame.setVisibility(View.INVISIBLE);
-
                 }
 
                 if (item.getItemId() == R.id.menu_details && is_playing != true && isLog && isStart) {
@@ -183,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
                     sign_frame.setVisibility(View.INVISIBLE);
                     details_frame.setVisibility(View.VISIBLE);
                     rules_frame.setVisibility(View.INVISIBLE);
-
                 }
 
                 if (item.getItemId() == R.id.menu_rules && is_playing != true && isStart) {
@@ -193,7 +192,6 @@ public class MainActivity extends AppCompatActivity {
                     details_frame.setVisibility(View.INVISIBLE);
                     rules_frame.setVisibility(View.VISIBLE);
                 }
-
                 return true;
             }
         });
@@ -201,7 +199,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static void gitUserid(String id, OnUserDataLoaded callback) {
         currentUserId = id;
-
         if (currentUserId != null && !currentUserId.isEmpty()) {
             if (callback != null) {
                 callback.onLoaded();  // تنفيذ callback لتنفيذ startData() بعد التأكد من currentUserId
@@ -259,8 +256,8 @@ public class MainActivity extends AppCompatActivity {
         details_Fragment.hints.setText("Number of Hints:    " + player_hint);
     }
 
-    public static void updateScore(int player_score) {
-        MainActivity.player_score = player_score;
+    public static void updateScore(int score) {
+        player_score += score;
         level1_Fragment.scoreT.setText("score: " + player_score);
         level2_Fragment.scoreT.setText("score: " + player_score);
         level3_Fragment.scoreT.setText("score: " + player_score);
@@ -369,74 +366,126 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void party(Context context) {
-            // عدد البالونات بناءً على العرض
-            int balloonWidth = 200; // عرض البالونة
-            int balloonSpacing = 50; // المسافة بين البالونات
-            int screenWidth = partyLayer.getWidth(); // عرض الشاشة
+        // عدد البالونات بناءً على العرض
+        int balloonWidth = 200; // عرض البالونة
+        int balloonSpacing = 50; // المسافة بين البالونات
+        int screenWidth = partyLayer.getWidth(); // عرض الشاشة
 
-            // حساب عدد البالونات الممكنة بالعرض
-            int numBalloons = (screenWidth - balloonSpacing) / (balloonWidth + balloonSpacing);
+        // حساب عدد البالونات الممكنة بالعرض
+        int numBalloons = (screenWidth - balloonSpacing) / (balloonWidth + balloonSpacing);
 
-            // التأكد من قياسات الشاشة داخل partyLayer
-            if (partyLayer == null) {
-                Toast.makeText(context, "Party layer not found!", Toast.LENGTH_SHORT).show();
-                return;
+        // التأكد من قياسات الشاشة داخل partyLayer
+        if (partyLayer == null) {
+            Toast.makeText(context, "Party layer not found!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // التأكد من قياسات الشاشة بعد التحقق من الـ Layout
+        partyLayer.post(() -> {
+            int screenHeight = partyLayer.getHeight();
+
+            // الحصول على الارتفاع المخصص للـ BottomNavigation
+            int bottomNavHeight = context.getResources().getDimensionPixelSize(R.dimen.design_bottom_navigation_height);
+
+            // المساحة المتاحة في الشاشة بدون الـ BottomNavigation
+            int availableHeight = screenHeight - bottomNavHeight;
+
+            // إضافة البالونات
+            for (int i = 0; i < numBalloons; i++) {
+                ImageView balloon = new ImageView(context);
+                balloon.setImageResource(R.drawable.balloon); // تأكد من وجود صورة بالونة في drawable
+
+                // تكبير حجم البالونات
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(balloonWidth + 200, 500); // حجم أكبر للبالونات
+
+                // تحديد موقع البالونة داخل النطاق المحدد (توزيع البالونات بشكل مرتب)
+                int xPosition = i * (balloonWidth + balloonSpacing); // حساب المسافة بين البالونات
+                int yPosition = availableHeight; // البداية من أسفل الشاشة بدون الـ BottomNavigation
+
+                params.leftMargin = xPosition;
+                params.topMargin = yPosition;
+
+                balloon.setLayoutParams(params);
+
+                // إضافة البالونة فورًا بعد تحديث الـ Layout
+                partyLayer.addView(balloon);
+                partyLayer.invalidate();
+
+                // تحريك البالونة للأعلى مع تسريع الحركة لتكون أكثر سلاسة
+                ObjectAnimator animator = ObjectAnimator.ofFloat(balloon, "translationY", yPosition, -screenHeight); // تحريك إلى أعلى الشاشة
+                animator.setDuration(5000); // مدة التحريك (5 ثواني)
+                animator.setInterpolator(new LinearInterpolator()); // جعل الحركة أكثر سلاسة
+                animator.start();
+                // لما تخلص الأنيميشن، امسح البالون
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        partyLayer.removeView(balloon);
+                    }
+                });
+                animator.start();
             }
-
-            // التأكد من قياسات الشاشة بعد التحقق من الـ Layout
-            partyLayer.post(() -> {
-                int screenHeight = partyLayer.getHeight();
-
-                // الحصول على الارتفاع المخصص للـ BottomNavigation
-                int bottomNavHeight = context.getResources().getDimensionPixelSize(R.dimen.design_bottom_navigation_height);
-
-                // المساحة المتاحة في الشاشة بدون الـ BottomNavigation
-                int availableHeight = screenHeight - bottomNavHeight;
-
-                // إضافة البالونات
-                for (int i = 0; i < numBalloons; i++) {
-                    ImageView balloon = new ImageView(context);
-                    balloon.setImageResource(R.drawable.balloon); // تأكد من وجود صورة بالونة في drawable
-
-                    // تكبير حجم البالونات
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(balloonWidth + 200, 500); // حجم أكبر للبالونات
-
-                    // تحديد موقع البالونة داخل النطاق المحدد (توزيع البالونات بشكل مرتب)
-                    int xPosition = i * (balloonWidth + balloonSpacing); // حساب المسافة بين البالونات
-                    int yPosition = availableHeight; // البداية من أسفل الشاشة بدون الـ BottomNavigation
-
-                    params.leftMargin = xPosition;
-                    params.topMargin = yPosition;
-
-                    balloon.setLayoutParams(params);
-
-                    // إضافة البالونة فورًا بعد تحديث الـ Layout
-                    partyLayer.addView(balloon);
-                    partyLayer.invalidate();
-
-                    // تحريك البالونة للأعلى مع تسريع الحركة لتكون أكثر سلاسة
-                    ObjectAnimator animator = ObjectAnimator.ofFloat(balloon, "translationY", yPosition, -screenHeight); // تحريك إلى أعلى الشاشة
-                    animator.setDuration(5000); // مدة التحريك (5 ثواني)
-                    animator.setInterpolator(new LinearInterpolator()); // جعل الحركة أكثر سلاسة
-                    animator.start();
-                    // لما تخلص الأنيميشن، امسح البالون
-                    animator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            partyLayer.removeView(balloon);
-                        }
-                    });
-                    animator.start();
-                }
-            });
+        });
     }
 
     public static void startPartyTimes(Context context) {
         Handler handler = new Handler();
         for (int i = 0; i < 5; i++) {
-            int delay = i * 1000; // كل 6 ثواني
+            int delay = i * 700; // فرق الزمن
             handler.postDelayed(() -> party(context), delay);
+            if (MainActivity.player_level == 1)
+                handler.postDelayed(() -> finalParty(context), delay);
         }
+    }
+
+    public static void finalParty(Context context) {
+        int width = 200;
+        int spacing = 50;
+
+        if (partyLayer == null) {
+            Toast.makeText(context, "Party layer not found!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        partyLayer.post(() -> {
+            int screenWidth = partyLayer.getWidth();
+            int screenHeight = partyLayer.getHeight();
+
+            int num = (screenWidth - spacing) / (width + spacing);
+            int bottomNavHeight = context.getResources().getDimensionPixelSize(R.dimen.design_bottom_navigation_height);
+            int availableHeight = screenHeight - bottomNavHeight;
+
+            for (int i = 0; i < num; i++) {
+                ImageView party = new ImageView(context);
+                party.setImageResource(R.drawable.party);
+
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width + 200, 500);
+
+                int xPosition = i * (width + spacing);
+                int startY = -500; // يبدأ من فوق الشاشة
+                int endY = availableHeight;
+
+                params.leftMargin = xPosition;
+                params.topMargin = startY;
+
+                party.setLayoutParams(params);
+                partyLayer.addView(party);
+                partyLayer.invalidate();
+
+                ObjectAnimator animator = ObjectAnimator.ofFloat(party, "translationY", startY, endY);
+                animator.setDuration(5000);
+                animator.setInterpolator(new LinearInterpolator());
+
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        partyLayer.removeView(party);
+                    }
+                });
+
+                animator.start();
+            }
+        });
     }
 
 }

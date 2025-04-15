@@ -2,6 +2,8 @@ package com.example.mathhero;
 
 import static com.example.mathhero.level1_Fragment.countDownTimer;
 
+import static java.lang.Integer.parseInt;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -54,7 +56,6 @@ public class level2_Fragment extends Fragment {
         hint = view.findViewById(R.id.hint);
         hint.setImageResource(R.drawable.hint);
         scoreT = view.findViewById(R.id.score);
-        scoreT.setText("score: " + MainActivity.player_score);
         number1 = view.findViewById(R.id.number1);
         number2 = view.findViewById(R.id.number2);
         answer = view.findViewById(R.id.answer);
@@ -63,15 +64,21 @@ public class level2_Fragment extends Fragment {
         hint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                check.setEnabled(false);
+                if (countDownTimer != null) {
+                    countDownTimer.cancel();
+                }
                 MainActivity.updateHint();
                 if (MainActivity.player_score > 4) {
                     MainActivity.updateScore(-5);
                     scoreT.setText("score: " + MainActivity.player_score);
-                    answer.setText(Integer.toString(Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())));
+                    answer.setText(Integer.toString(Integer.parseInt(number1.getText().toString()) - Integer.parseInt(number2.getText().toString())));
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             answer.setText("");
+                            check.setEnabled(true);
+                            newTimer(parseInt(timerText.getText().toString()));
                         }
                     }, 2000);
                 } else {
@@ -110,7 +117,7 @@ public class level2_Fragment extends Fragment {
                                 emojiImage.setVisibility(View.GONE);
                                 newExercise();
                             }
-                        }, 2000);
+                        }, 1500);
                     }
                     else {
                         n=1;
@@ -152,7 +159,11 @@ public class level2_Fragment extends Fragment {
     }
 
     public static void newExercise() {
-        newTimer(stage);
+        int h=0;
+        if(stage==1) h=10;
+        if(stage==2) h=15;
+        if(stage==3) h=20;
+        newTimer(h);
         answer.setText("");
         int a=1,b=2;
 
@@ -171,7 +182,7 @@ public class level2_Fragment extends Fragment {
         }
 
         if (stage == 3) {
-            while (a < b) {
+            while (a<b) {
                 a = (int) (Math.random() * 900) + 100;
                 b = (int) (Math.random() * 900) + 100;
             }
@@ -185,31 +196,14 @@ public class level2_Fragment extends Fragment {
         MainActivity.updateLevel(2, getContext());
         MainActivity.is_playing = false;
         MainActivity.Home_frame.setVisibility(View.VISIBLE);
-        MainActivity.level1_frame.setVisibility(View.INVISIBLE);
+        MainActivity.level2_frame.setVisibility(View.INVISIBLE);
         MainActivity.startPartyTimes(getContext());
     }
 
 
-    private static CountDownTimer countDownTimer; // عشان نقدر نوقف المؤقت القديم إذا احتجنا
+    static CountDownTimer countDownTimer; // عشان نقدر نوقف المؤقت القديم إذا احتجنا
 
-    public static void newTimer(int stage) {
-        // نحدد الوقت حسب قيمة المرحلة
-        int timeInSeconds;
-        switch (stage) {
-            case 1:
-                timeInSeconds = 10;
-                break;
-            case 2:
-                timeInSeconds = 15;
-                break;
-            case 3:
-                timeInSeconds = 20;
-                break;
-            default:
-                timeInSeconds = 0;
-                break;
-        }
-
+    public static void newTimer(int timeInSeconds) {
         // نلغي المؤقت القديم إذا كان شغال
         if (countDownTimer != null) {
             countDownTimer.cancel();
@@ -224,12 +218,7 @@ public class level2_Fragment extends Fragment {
 
             public void onFinish() {
                 // المستخدم ما جاوب => تمرين جديد
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        newExercise();
-                    }
-                }, 500); // تأخير صغير لتجنب مشاكل التداخل
+                new Handler(Looper.getMainLooper()).postDelayed(() -> newExercise(), 500);
             }
         }.start();
     }
@@ -243,8 +232,8 @@ public class level2_Fragment extends Fragment {
 
         new AlertDialog.Builder(getActivity())
                 .setTitle("Correct Answer")
-                .setMessage(number1.getText().toString() + " + " + number2.getText().toString() + " = "
-                        + (Integer.parseInt(number1.getText().toString()) + Integer.parseInt(number2.getText().toString())))
+                .setMessage(number1.getText().toString() + " - " + number2.getText().toString() + " = "
+                        + (Integer.parseInt(number1.getText().toString()) - Integer.parseInt(number2.getText().toString())))
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

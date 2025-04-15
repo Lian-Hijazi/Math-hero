@@ -137,7 +137,6 @@ public class signUpFrag extends Fragment {
    public void startlogin(){
         MainActivity.sign_frame.setVisibility(View.INVISIBLE);
         MainActivity.Login_frame.setVisibility(View.VISIBLE);
-        MainActivity.Home_frame.setVisibility(View.INVISIBLE);
    }
 
     public void addUserToFireStore( String userId){

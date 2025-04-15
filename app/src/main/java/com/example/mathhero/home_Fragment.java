@@ -1,20 +1,17 @@
 package com.example.mathhero;
 
 
-import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import android.animation.ObjectAnimator;
-import android.widget.FrameLayout;
-import java.util.Random;
 
 
 
@@ -23,6 +20,9 @@ public class home_Fragment extends Fragment {
     private TextView level1,level2,level3,level4;
     private ImageView logo;
     public static TextView leveltv,scoretv,startIn;
+
+    private ImageView lock;;
+
 
     public home_Fragment() {
 
@@ -44,6 +44,7 @@ public class home_Fragment extends Fragment {
         level3=view.findViewById(R.id.multiplication);
         level4=view.findViewById(R.id.division);
         startIn=view.findViewById(R.id.startIn);
+        lock = view.findViewById(R.id.lock);
 
         level1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +56,6 @@ public class home_Fragment extends Fragment {
                     level1_Fragment.n=1;
                     play();
                 }
-
             }
         });
 
@@ -69,6 +69,7 @@ public class home_Fragment extends Fragment {
                     level2_Fragment.n=1;
                     play();
                 }
+                else {showLock();}
             }
         });
 
@@ -82,6 +83,7 @@ public class home_Fragment extends Fragment {
                     level3_Fragment.n=1;
                     play();
                 }
+                else {showLock();}
             }
         });
 
@@ -95,6 +97,7 @@ public class home_Fragment extends Fragment {
                     level4_Fragment.n=1;
                     play();
                 }
+                else {showLock();}
             }
         });
         return view;
@@ -105,5 +108,16 @@ public class home_Fragment extends Fragment {
         MainActivity.is_playing=true;
         MainActivity.Home_frame.setVisibility(View.INVISIBLE);
     }
+
+    private void showLock() {
+        lock.setVisibility(View.VISIBLE);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                lock.setVisibility(View.GONE);
+            }
+        }, 1500);
+    }
+
 
 }

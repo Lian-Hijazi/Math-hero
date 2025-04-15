@@ -63,7 +63,6 @@ public class loginFrag extends Fragment {
         signBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.Home_frame.setVisibility(View.INVISIBLE);
                 MainActivity.Login_frame.setVisibility(View.INVISIBLE);
                 MainActivity.sign_frame.setVisibility(View.VISIBLE);
             }
@@ -94,7 +93,7 @@ public class loginFrag extends Fragment {
                             MainActivity.Login_frame.setVisibility(View.INVISIBLE);
                             MainActivity.sign_frame.setVisibility(View.INVISIBLE);
                             MainActivity.isLog = true;
-
+                            MainActivity.start.setVisibility(View.VISIBLE);
                             et_email.setText("");
                             et_password.setText("");
                         });
@@ -125,6 +124,7 @@ public class loginFrag extends Fragment {
                         MainActivity.Login_frame.setVisibility(View.INVISIBLE);
                         MainActivity.sign_frame.setVisibility(View.INVISIBLE);
                         MainActivity.isLog = true;
+                        MainActivity.start.setVisibility(View.VISIBLE);
                     });
                 }
             });
