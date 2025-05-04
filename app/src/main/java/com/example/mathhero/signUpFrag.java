@@ -27,7 +27,6 @@ public class signUpFrag extends Fragment {
     private TextInputEditText user,name,phone,email,password,confirmPassword,age;
     private FirebaseAuth mAuth;
     FirebaseFirestore db;
-    private ImageView imageView,logo;
 
     public signUpFrag() {
         // Required empty public constructor
@@ -39,10 +38,6 @@ public class signUpFrag extends Fragment {
         View view= inflater.inflate(R.layout.fragment_sign_up_, container, false);
         mAuth=FirebaseAuth.getInstance();
         db=FirebaseFirestore.getInstance();
-        logo=view.findViewById(R.id.logo);
-        imageView=view.findViewById(R.id.imageView);
-        imageView.setImageResource(R.drawable.math);
-        logo.setImageResource(R.drawable.logo);
         signBtn=view.findViewById(R.id.signButton1);
         user=view.findViewById(R.id.et_user);
         name=view.findViewById(R.id.et_name);
@@ -96,7 +91,6 @@ public class signUpFrag extends Fragment {
                 if(result){
                     SignUp();
                 }
-
             }
         });
         return view;
@@ -178,7 +172,5 @@ public class signUpFrag extends Fragment {
 
         }
         return ((pass.length>=6)&&nums>0&&Capetal>0&&small>0&&nums+Capetal+small==pass.length);
-
     }
-
 }

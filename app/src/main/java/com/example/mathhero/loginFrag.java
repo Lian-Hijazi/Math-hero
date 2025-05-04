@@ -27,9 +27,7 @@ public class loginFrag extends Fragment {
     private TextInputEditText et_email, et_password;
     private Button btn_submit, signBtn;
     private FirebaseAuth mAuth;
-    private ImageView logo,imageView;
     private FirebaseUser currentUser;
-
 
     public loginFrag() {
         // Required empty public constructor
@@ -37,18 +35,10 @@ public class loginFrag extends Fragment {
 
     @SuppressLint("MissingInflatedId")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         mAuth=FirebaseAuth.getInstance();
         // Inflate the layout for this fragment
-
         View view= inflater.inflate(R.layout.fragment_login_, container, false);
-        logo=view.findViewById(R.id.logo);
-        imageView=view.findViewById(R.id.imageView);
-        imageView.setImageResource(R.drawable.math);
-        logo.setImageResource(R.drawable.logo);
         signBtn=view.findViewById(R.id.signButton2);
         et_email=view.findViewById(R.id.et_email);
         et_password=view.findViewById(R.id.et_password);
@@ -59,7 +49,6 @@ public class loginFrag extends Fragment {
                 checkEmailPass();
             }
         });
-
         signBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,7 +60,6 @@ public class loginFrag extends Fragment {
     }
 
     @SuppressLint("SuspiciousIndentation")
-
     public void checkEmailPass(){
         String email,password;
         email=et_email.getText().toString();
@@ -98,22 +86,17 @@ public class loginFrag extends Fragment {
                             et_password.setText("");
                         });
                     }
-                    else
-                        Toast.makeText(getActivity(), "login failed", Toast.LENGTH_SHORT).show();
-
+                    else Toast.makeText(getActivity(), "login failed", Toast.LENGTH_SHORT).show();
                 }
             });
         }
-        else {
-            Toast.makeText(getActivity(), "pleas fill fields", Toast.LENGTH_SHORT).show();
-        }
+        else Toast.makeText(getActivity(), "pleas fill fields", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
         if (currentUser != null) {
             updateUI();
             gitUserid(currentUser.getUid(), new MainActivity.OnUserDataLoaded() {
@@ -130,8 +113,6 @@ public class loginFrag extends Fragment {
             });
         }
     }
-
-
     public void updateUI(){
         MainActivity.isLog=true;
         MainActivity.Login_frame.setVisibility(View.INVISIBLE);

@@ -19,8 +19,6 @@ public class User {
         this.score = 5;
     }
 
-
-
     public void setHint(int hint) {
             this.hint = hint;
         }
@@ -49,7 +47,6 @@ public class User {
             return name;
         }
 
-
         public String getAge() {
             return age;
         }
@@ -61,6 +58,4 @@ public class User {
         public String getPhone() {
             return phone;
         }
-
-
 }

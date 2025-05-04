@@ -7,7 +7,7 @@
     android:background="#FFEB00">
 
     <ImageView
-        android:id="@+id/emojiImage"
+        android:id="@+id/goodImage"
         android:layout_width="500dp"
         android:layout_height="500dp"
         android:layout_gravity="center"
@@ -41,6 +41,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="250dp"
+                android:src="@drawable/hint"
                 />
 
         </LinearLayout>
@@ -65,11 +66,19 @@
 
             <TextView
                 android:id="@+id/level"
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="Level 4 : Division "
-                android:textSize="30dp"
+                android:textSize="25dp"
                 android:background="#FFDD00 "
+                />
+
+            <ImageView
+                android:id="@+id/timeImage"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="50dp"
+                android:src="@drawable/timeout"
                 />
 
             <TextView
@@ -80,9 +89,8 @@
                 android:textStyle="bold"
                 android:textSize="60sp"
                 android:textColor="#211C84"
-                android:layout_marginStart="100dp"
+                android:layout_marginStart="15dp"
                 />
-
         </LinearLayout>
 
         <LinearLayout
@@ -155,9 +163,10 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="170dp"
-                android:layout_height="220dp"
-                android:id="@+id/think_img"/>
+                android:layout_width="200dp"
+                android:layout_height="400dp"
+                android:src="@drawable/think"
+                />
 
             <Button
                 android:id="@+id/leave"
@@ -165,7 +174,7 @@
                 android:layout_height="50dp"
                 android:text="leave"
                 android:textSize="25dp"
-                android:layout_marginTop="150dp"
+                android:layout_marginTop="250dp"
                 android:layout_marginLeft="100dp"
                 />
 

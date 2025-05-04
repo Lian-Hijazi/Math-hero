@@ -20,33 +20,26 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 public class details_Fragment extends Fragment {
-    private ImageView logo,img;
     private FloatingActionButton btnlogout;
     public static TextView name,user,phone,age,email,level,score,hints;
-
-
 
     public details_Fragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_details_, container, false);
-        logo = view.findViewById(R.id.logo);
-        logo.setImageResource(R.drawable.logo);
-        img=view.findViewById(R.id.imageView);
-        img.setImageResource(R.drawable.math);
         btnlogout=view.findViewById(R.id.btn_logout);
+
         btnlogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 logout();
             }
-            });
+        });
 
         name=view.findViewById(R.id.textViewName);
         user=view.findViewById(R.id.textViewUserName);
@@ -56,7 +49,6 @@ public class details_Fragment extends Fragment {
         level=view.findViewById(R.id.textViewLevel);
         score=view.findViewById(R.id.textViewScore);
         hints=view.findViewById(R.id.textViewHints);
-
         return view;
     }
 
@@ -66,5 +58,4 @@ public class details_Fragment extends Fragment {
         MainActivity.Login_frame.setVisibility(View.VISIBLE);
         MainActivity.details_frame.setVisibility(View.INVISIBLE);
     }
-
 }

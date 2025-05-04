@@ -15,8 +15,6 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d("NotificationReceiver", "Notification received");
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "game_channel")
                 .setSmallIcon(R.drawable.star)
                 .setContentTitle("We miss you!")

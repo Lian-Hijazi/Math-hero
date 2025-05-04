@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,44 +39,45 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import android.view.animation.LinearInterpolator;
+import android.media.MediaPlayer;
 
-import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
     public static FrameLayout Home_frame, Login_frame, sign_frame, details_frame, rules_frame;
+    public static FrameLayout level1_frame, level2_frame, level3_frame, level4_frame;
     public static home_Fragment homeFrag;
     public static loginFrag loginfrag;
     public static details_Fragment detailsFrag;
     public static Rules_Fragment rulesFrag;
-    public static boolean is_playing, isStart;
-
+    public static boolean is_playing, isStart, isLog;
     public static FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    public static FrameLayout level1_frame, level2_frame, level3_frame, level4_frame;
     public static level1_Fragment level1Frag;
     public static level2_Fragment level2Frag;
     public static level3_Fragment level3Frag;
     public static level4_Fragment level4Frag;
-
     public static int player_level, player_score, player_hint;
     public static String currentUserId;
-
-
     public static signUpFrag signUpFrag;
     private BottomNavigationView bottom_navigation;
-    public static boolean isLog;
     public static Button start;
 
-    public static FrameLayout partyLayer;
+    public static MediaPlayer celebrationSound1, celebrationSound2,true_Answer,false_Answer; // للموسيقى
+    public static FrameLayout partyLayer;  // للاحتفال
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        celebrationSound1= MediaPlayer.create(this, R.raw.celebration);       //تعبئة الاصوات
+        celebrationSound2= MediaPlayer.create(this, R.raw.celebration_sound);
+        true_Answer= MediaPlayer.create(this, R.raw.point);
+        false_Answer= MediaPlayer.create(this, R.raw.wrong);
+
         FirebaseApp.initializeApp(this);
         isStart = false;
         is_playing = false;
@@ -86,13 +88,11 @@ public class MainActivity extends AppCompatActivity {
         details_frame = findViewById(R.id.details_Frame);
         sign_frame = findViewById(R.id.signUp_Frame);
         rules_frame = findViewById(R.id.rules_Frame);
-
         //levels frames
         level1_frame = findViewById(R.id.level1_Frame);
         level2_frame = findViewById(R.id.level2_Frame);
         level3_frame = findViewById(R.id.level3_Frame);
         level4_frame = findViewById(R.id.level4_Frame);
-
         partyLayer = findViewById(R.id.partyLayer);
 
         bottom_navigation = findViewById(R.id.bottom_navigation);
@@ -107,21 +107,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {    // إذا كان الإصدار Android 8.0 (Oreo) أو أعلى، أنشئ قناة إشعارات
             NotificationChannel channel = new NotificationChannel("game_channel", "Game Notifications", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             manager.createNotificationChannel(channel);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {   // إذا كان الإصدار Android 13 (Tiramisu) أو أعلى، افحص إذن الإشعارات
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 101);
             }
         }
-
     }
-
     public void startFragment() {
         homeFrag = new home_Fragment();
         loginfrag = new loginFrag();
@@ -143,20 +141,16 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.level3_Frame, level3Frag).commit();
         getSupportFragmentManager().beginTransaction().add(R.id.level4_Frame, level4Frag).commit();
         //hide other fragments
-
         details_frame.setVisibility(View.INVISIBLE);
         sign_frame.setVisibility(View.INVISIBLE);
         rules_frame.setVisibility(View.INVISIBLE);
-
         //hide levels fragment
         level1_frame.setVisibility(View.INVISIBLE);
         level2_frame.setVisibility(View.INVISIBLE);
         level3_frame.setVisibility(View.INVISIBLE);
         level4_frame.setVisibility(View.INVISIBLE);
-
         Home_frame.setVisibility(View.INVISIBLE);
         Login_frame.setVisibility(View.VISIBLE);
-
         //set up navigation View listener
         bottom_navigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -168,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
                     details_frame.setVisibility(View.INVISIBLE);
                     rules_frame.setVisibility(View.INVISIBLE);
                 }
-
                 if (item.getItemId() == R.id.menu_login && is_playing != true && !isLog) {
                     Home_frame.setVisibility(View.INVISIBLE);
                     Login_frame.setVisibility(View.VISIBLE);
@@ -176,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                     details_frame.setVisibility(View.INVISIBLE);
                     rules_frame.setVisibility(View.INVISIBLE);
                 }
-
                 if (item.getItemId() == R.id.menu_details && is_playing != true && isLog && isStart) {
                     Home_frame.setVisibility(View.INVISIBLE);
                     Login_frame.setVisibility(View.INVISIBLE);
@@ -184,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
                     details_frame.setVisibility(View.VISIBLE);
                     rules_frame.setVisibility(View.INVISIBLE);
                 }
-
                 if (item.getItemId() == R.id.menu_rules && is_playing != true && isStart) {
                     Home_frame.setVisibility(View.INVISIBLE);
                     Login_frame.setVisibility(View.INVISIBLE);
@@ -208,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public interface OnUserDataLoaded {
+    public interface OnUserDataLoaded {  // واجهة لاستدعاء دالة بعد تحميل بيانات المستخدم
         void onLoaded();
     }
 
@@ -224,9 +215,7 @@ public class MainActivity extends AppCompatActivity {
                         player_level = user.getLevel();
                         player_hint = user.getHint();
                         Log.d("UserData", "Score: " + player_score + ", Level: " + player_level + ", Hint: " + player_hint);
-                        if (callback != null) {
-                            callback.onLoaded();
-                        }
+                        if (callback != null) {callback.onLoaded();}
                         //input home values
                         home_Fragment.scoretv.setText("score:" + player_score);
                         home_Fragment.leveltv.setText("level:" + player_level);
@@ -257,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void updateScore(int score) {
+        if(score>0) true_Answer.start();
         player_score += score;
         level1_Fragment.scoreT.setText("score: " + player_score);
         level2_Fragment.scoreT.setText("score: " + player_score);
@@ -268,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void updateLevel(int level, Context context) {
-        if (player_level != 4) {
+        if (level != 4) {
             if (player_level == level) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle("🎉 Well Done!");
@@ -285,11 +275,11 @@ public class MainActivity extends AppCompatActivity {
                         db.collection("users").document(currentUserId).update("level", player_level);
                     }
                 });
-
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
-        } else {
+        }
+        else {
             player_level = 1;
             player_score = 5;
             player_hint = 0;
@@ -323,7 +313,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
         // تحقق إذا كان يمكن جدولة المنبهات الدقيقة (من خلال AlarmManager غير ثابت)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (getSystemService(AlarmManager.class).canScheduleExactAlarms()) {
@@ -352,11 +341,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "Alarm set for 1 minute from now: " + triggerAtMillis);
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
-
         // إلغاء المنبه عند العودة للنشاط
         Intent intent = new Intent(this, NotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -366,20 +353,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void party(Context context) {
-        // عدد البالونات بناءً على العرض
+        celebrationSound1.start(); //تشفيل صوت
+        new Handler(Looper.getMainLooper()).postDelayed(() -> celebrationSound2.start(), 500);
         int balloonWidth = 200; // عرض البالونة
         int balloonSpacing = 50; // المسافة بين البالونات
         int screenWidth = partyLayer.getWidth(); // عرض الشاشة
-
         // حساب عدد البالونات الممكنة بالعرض
         int numBalloons = (screenWidth - balloonSpacing) / (balloonWidth + balloonSpacing);
-
         // التأكد من قياسات الشاشة داخل partyLayer
         if (partyLayer == null) {
             Toast.makeText(context, "Party layer not found!", Toast.LENGTH_SHORT).show();
             return;
         }
-
         // التأكد من قياسات الشاشة بعد التحقق من الـ Layout
         partyLayer.post(() -> {
             int screenHeight = partyLayer.getHeight();
@@ -439,51 +424,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void finalParty(Context context) {
-        int width = 200;
-        int spacing = 50;
+        int width = 200;         // عرض كل صورة مفرقعة
+        int spacing = 50;        // المسافة بين كل مفرقعة والثانية
 
-        if (partyLayer == null) {
-            Toast.makeText(context, "Party layer not found!", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        // تنفيذ الكود بعد ما يتم قياس أبعاد الشاشة
         partyLayer.post(() -> {
-            int screenWidth = partyLayer.getWidth();
-            int screenHeight = partyLayer.getHeight();
+            int screenWidth = partyLayer.getWidth();    // عرض الشاشة
+            int screenHeight = partyLayer.getHeight();  // ارتفاع الشاشة
 
+            // حساب كم مفرقعة ممكن نحط أفقيًا حسب المساحة
             int num = (screenWidth - spacing) / (width + spacing);
+
+            // حساب ارتفاع شريط التنقل السفلي حتى ما نغطيه بالمفرقعات
             int bottomNavHeight = context.getResources().getDimensionPixelSize(R.dimen.design_bottom_navigation_height);
-            int availableHeight = screenHeight - bottomNavHeight;
+            int availableHeight = screenHeight - bottomNavHeight; // المساحة اللي فينا نستخدمها
 
+            // نرسم المفرقعات ونحركها وحدة وحدة
             for (int i = 0; i < num; i++) {
-                ImageView party = new ImageView(context);
-                party.setImageResource(R.drawable.party);
+                ImageView party = new ImageView(context);             // إنشاء صورة جديدة
+                party.setImageResource(R.drawable.party);         // صورة المفرقعة
 
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width + 200, 500);
+                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width + 200, 500); // حجم المفرقعة
 
-                int xPosition = i * (width + spacing);
-                int startY = -500; // يبدأ من فوق الشاشة
-                int endY = availableHeight;
+                int xPosition = i * (width + spacing); // مكان المفرقعة على المحور الأفقي
+                int startY = -500;                     // تبدأ من فوق الشاشة
+                int endY = availableHeight;            // وتنتهي تحت
 
                 params.leftMargin = xPosition;
                 params.topMargin = startY;
 
-                party.setLayoutParams(params);
-                partyLayer.addView(party);
-                partyLayer.invalidate();
+                party.setLayoutParams(params);     // تطبيق الإعدادات
+                partyLayer.addView(party);         // إضافتها على الواجهة
+                partyLayer.invalidate();           // تحديث الطبقة
 
+                // حركة المفرقعة من الأعلى للأسفل
                 ObjectAnimator animator = ObjectAnimator.ofFloat(party, "translationY", startY, endY);
-                animator.setDuration(5000);
-                animator.setInterpolator(new LinearInterpolator());
+                animator.setDuration(5000);               // مدة الحركة 5 ثواني
+                animator.setInterpolator(new LinearInterpolator()); // حركة ثابتة
 
+                // إزالة صورة المفرقعة بعد نهاية الحركة
                 animator.addListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         partyLayer.removeView(party);
                     }
                 });
-
-                animator.start();
+                animator.start(); // بدء الحركة
             }
         });
     }

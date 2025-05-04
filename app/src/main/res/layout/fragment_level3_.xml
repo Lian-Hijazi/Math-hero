@@ -6,7 +6,7 @@
     tools:context="com.example.mathhero.MainActivity"
     android:background="#4379F2">
     <ImageView
-        android:id="@+id/emojiImage"
+        android:id="@+id/goodImage"
         android:layout_width="500dp"
         android:layout_height="500dp"
         android:layout_gravity="center"
@@ -40,6 +40,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="250dp"
+                android:src="@drawable/hint"
                 />
 
         </LinearLayout>
@@ -67,8 +68,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="Level 3 : Multiplication "
-                android:textSize="30dp"
+                android:textSize="25dp"
                 android:background="#7FAEF9 "
+                />
+
+            <ImageView
+                android:id="@+id/timeImage"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/timeout"
                 />
 
             <TextView
@@ -158,9 +167,10 @@
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="170dp"
-                android:layout_height="220dp"
-                android:id="@+id/think_img"/>
+                android:layout_width="200dp"
+                android:layout_height="400dp"
+                android:src="@drawable/think"
+                />
 
             <Button
                 android:id="@+id/leave"
@@ -168,7 +178,7 @@
                 android:layout_height="50dp"
                 android:text="leave"
                 android:textSize="25dp"
-                android:layout_marginTop="150dp"
+                android:layout_marginTop="250dp"
                 android:layout_marginLeft="100dp"
                 />
 

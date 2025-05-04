@@ -11,13 +11,11 @@ import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 
 public class Rules_Fragment extends Fragment {
-    private ImageView img,logo;
     TextView rules,stages,conditions,points,help;
     Button back;
     public Rules_Fragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -30,10 +28,6 @@ public class Rules_Fragment extends Fragment {
         conditions=view.findViewById(R.id.conditions);
         points=view.findViewById(R.id.points);
         help=view.findViewById(R.id.help);
-        logo=view.findViewById(R.id.logo);
-        logo.setImageResource(R.drawable.logo);
-        img = view.findViewById(R.id.imageView);
-        img.setImageResource(R.drawable.math);
         rules.setVisibility(View.INVISIBLE);
         back.setVisibility(View.INVISIBLE);
 
@@ -99,7 +93,6 @@ public class Rules_Fragment extends Fragment {
                 back.setVisibility(View.VISIBLE);
             }
         });
-
 
         return view;
     }
