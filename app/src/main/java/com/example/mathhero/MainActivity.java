@@ -246,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
     public static void updateHint() {
         player_hint++;
         details_Fragment.hints.setText("Number of Hints:    " + player_hint);
+        db.collection("users").document(currentUserId).update("hint", player_hint);
     }
 
     public static void updateScore(int score) {
@@ -330,15 +331,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     @Override
     protected void onPause() {
         super.onPause();
         // تحقق إذا كان يمكن جدولة المنبهات الدقيقة (من خلال AlarmManager غير ثابت)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (getSystemService(AlarmManager.class).canScheduleExactAlarms()) {
-                // ضبط الوقت الذي يجب أن يمر قبل أن يُرسل الإشعار (دقيقة)
+                // ضبط الوقت الذي يجب أن يمر قبل أن يُرسل الإشعار ( دقيقة)
                 long triggerAtMillis = System.currentTimeMillis() + 60000; // 60,000 ميلي ثانية = دقيقة
                 scheduleAlarm(triggerAtMillis);
             }
@@ -374,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
         alarmManager.cancel(pendingIntent); // إلغاء المنبه عند العودة للنشاط
     }
 
-    public static void party(Context context) {
+    public static void party(Context context) {   //احتفال عند ختم مرحلة
         celebrationSound1.start(); //تشفيل صوت
         new Handler(Looper.getMainLooper()).postDelayed(() -> celebrationSound2.start(), 500);
         int balloonWidth = 200; // عرض البالونة
@@ -435,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public static void startPartyTimes(Context context) {
+    public static void startPartyTimes(Context context) {// منستدعيها بال finish level عشان نعيد ظهور البالونات خمس مرات ونعرف اذا نعمل احتفال نهائي
         Handler handler = new Handler();
         for (int i = 0; i < 5; i++) {
             int delay = i * 700; // فرق الزمن
@@ -445,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void finalParty(Context context) {
+    public static void finalParty(Context context) {  //احتفال نهائي
         int width = 200;         // عرض كل صورة مفرقعة
         int spacing = 50;        // المسافة بين كل مفرقعة والثانية
 

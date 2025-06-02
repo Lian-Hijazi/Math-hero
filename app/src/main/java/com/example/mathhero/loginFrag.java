@@ -75,7 +75,7 @@ public class loginFrag extends Fragment {
                         MainActivity.isLog=true;
                         currentUser= mAuth.getCurrentUser();
                         gitUserid(currentUser.getUid(),null);
-
+                        MainActivity.Login_frame.setVisibility(View.INVISIBLE);
                         startData(() -> {
                             // ✅ لما تجهز البيانات من Firebase
                             MainActivity.Login_frame.setVisibility(View.INVISIBLE);
