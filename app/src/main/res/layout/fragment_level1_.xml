@@ -65,7 +65,7 @@
 
             <TextView
                 android:id="@+id/level"
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="Level 1 : addition"
                 android:textSize="30dp"
@@ -74,21 +74,21 @@
 
             <ImageView
                 android:id="@+id/timeImage"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginLeft="30dp"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginLeft="20dp"
                 android:src="@drawable/timeout"
                 />
 
             <TextView
                 android:id="@+id/timerText"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:text="5"
+                android:text="55"
                 android:textStyle="bold"
                 android:textSize="60sp"
                 android:textColor="#211C84"
-                android:layout_marginStart="20dp"
+                android:layout_marginStart="10dp"
                 />
 
         </LinearLayout>

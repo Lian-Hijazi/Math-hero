@@ -4,6 +4,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
@@ -34,6 +35,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         celebrationSound1= MediaPlayer.create(this, R.raw.celebration);       //تعبئة الاصوات
         celebrationSound2= MediaPlayer.create(this, R.raw.celebration_sound);
@@ -228,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                         details_Fragment.hints.setText("Number of Hints:    " + user.getHint());
                         details_Fragment.level.setText("Level:    " + user.getLevel());
                         details_Fragment.score.setText("Score:    " + user.getScore());
-                        details_Fragment.email.setText("Email:    " + db.collection("users").document(currentUserId));
+                        details_Fragment.email.setText("Email:    " +  FirebaseAuth.getInstance().getCurrentUser().getEmail());
                         //input levels scores values
                         level1_Fragment.scoreT.setText("score: " + player_score);
                         level2_Fragment.scoreT.setText("score: " + player_score);
@@ -309,6 +312,25 @@ public class MainActivity extends AppCompatActivity {
             builder.show();
         }
     }
+
+    @SuppressLint("MissingSuperCall")
+    @Override
+    public void onBackPressed() {//عند الضغط على زر الرجوع بالهاتف تاكيد الخروج من اللعبةعلى اللعبة
+        new AlertDialog.Builder(this)
+                .setTitle("Exit Game")
+                .setMessage("Are you sure you want to exit the game?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish(); // Exit the game
+                    }
+                })
+                .setNegativeButton("Cancel", null) // Do nothing, stay in the game
+                .show();
+    }
+
+
+
 
     @Override
     protected void onPause() {

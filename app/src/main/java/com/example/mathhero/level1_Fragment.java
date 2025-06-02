@@ -121,7 +121,7 @@ public class level1_Fragment extends Fragment {
                 countDownTimer.cancel();
                 // عرض حوار لتاكيد الخروج
                 new android.app.AlertDialog.Builder(getActivity())
-                        .setTitle("Exit Game")
+                        .setTitle("Exit Level")
                         .setMessage("Are you sure you want to leave?")
                         .setPositiveButton("Yes", (dialog, which) -> {
                             MainActivity.is_playing = false;
